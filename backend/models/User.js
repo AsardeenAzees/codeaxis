@@ -47,10 +47,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  isLocked: {
-    type: Boolean,
-    default: false
-  },
+  // ❌ removed the isLocked Boolean field to avoid clash and redundancy
   isFirstLogin: {
     type: Boolean,
     default: true
@@ -76,14 +73,16 @@ userSchema.virtual('fullName').get(function() {
   return `${this.firstName} ${this.lastName}`;
 });
 
-// Index for email and NIC
-userSchema.index({ email: 1 });
-userSchema.index({ nic: 1 });
+// ✅ Optional: boolean virtual so `user.isLocked` still works in code
+userSchema.virtual('isLocked').get(function () {
+  return !!(this.lockUntil && this.lockUntil > Date.now());
+});
+
+// Indexes are defined via field-level unique where needed; avoid duplicates
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -98,28 +97,28 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Method to check if account is locked
-userSchema.methods.isLocked = function() {
+// ✅ Renamed to avoid name collision with the virtual/property
+userSchema.methods.isAccountLocked = function() {
   return !!(this.lockUntil && this.lockUntil > Date.now());
 };
 
 // Method to increment login attempts
 userSchema.methods.incLoginAttempts = function() {
-  // If we have a previous lock that has expired, restart at 1
+  // If a previous lock expired, restart at 1
   if (this.lockUntil && this.lockUntil < Date.now()) {
     return this.updateOne({
       $unset: { lockUntil: 1 },
       $set: { loginAttempts: 1 }
     });
   }
-  
+
   const updates = { $inc: { loginAttempts: 1 } };
-  
+
   // Lock account after 5 failed attempts for 2 hours
-  if (this.loginAttempts + 1 >= 5 && !this.isLocked()) {
+  if (this.loginAttempts + 1 >= 5 && !this.isAccountLocked()) {
     updates.$set = { lockUntil: Date.now() + 2 * 60 * 60 * 1000 };
   }
-  
+
   return this.updateOne(updates);
 };
 

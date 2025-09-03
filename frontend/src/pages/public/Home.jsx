@@ -21,7 +21,9 @@ import {
   BiTrendingUp,
   BiCheckCircle,
   BiArrowRight,
-  BiStar
+  BiStar,
+  BiUserPlus,
+  BiEnvelope
 } from 'react-icons/bi'
 
 const Home = () => {

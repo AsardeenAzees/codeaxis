@@ -81,7 +81,6 @@ const testimonialSchema = new mongoose.Schema({
   // SEO
   slug: {
     type: String,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -93,7 +92,7 @@ const testimonialSchema = new mongoose.Schema({
     default: 0
   },
   reportCount: {
-    type: 0,
+    type: Number,
     default: 0
   },
   // Moderation
@@ -152,7 +151,8 @@ testimonialSchema.index({ isApproved: 1 });
 testimonialSchema.index({ isPublic: 1 });
 testimonialSchema.index({ categories: 1 });
 testimonialSchema.index({ tags: 1 });
-testimonialSchema.index({ slug: 1 });
+// Unique index for slug (single source of truth)
+testimonialSchema.index({ slug: 1 }, { unique: true });
 testimonialSchema.index({ isActive: 1 });
 testimonialSchema.index({ createdAt: 1 });
 

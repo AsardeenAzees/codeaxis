@@ -58,7 +58,6 @@ const paymentSchema = new mongoose.Schema({
   // Invoice and receipt
   invoiceNumber: {
     type: String,
-    unique: true,
     required: true
   },
   receiptNumber: String,
@@ -186,7 +185,8 @@ paymentSchema.index({ status: 1 });
 paymentSchema.index({ type: 1 });
 paymentSchema.index({ dueDate: 1 });
 paymentSchema.index({ paidDate: 1 });
-paymentSchema.index({ invoiceNumber: 1 });
+// Keep a single index path (avoid duplicate unique + schema.index)
+paymentSchema.index({ invoiceNumber: 1 }, { unique: true });
 paymentSchema.index({ createdBy: 1 });
 paymentSchema.index({ isActive: 1 });
 
