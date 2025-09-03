@@ -13,7 +13,7 @@ import {
   Eye,
   Trash,
   Calendar,
-  DollarSign,
+  CurrencyDollar,
   Person,
   Folder,
   Link45deg

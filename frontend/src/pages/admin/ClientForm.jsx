@@ -15,7 +15,7 @@ import {
   Envelope,
   Phone,
   Globe,
-  MapPin,
+  GeoAlt,
   Calendar
 } from 'react-bootstrap-icons';
 import { getClient, createClient, updateClient } from '../../api/clients';

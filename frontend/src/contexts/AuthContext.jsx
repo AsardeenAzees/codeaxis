@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 
 // API endpoints
-const API_URL = process.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_URL = (import.meta?.env?.VITE_API_URL) || 'http://localhost:5000/api'
 
 // Action types
 const AUTH_ACTIONS = {
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status
   const checkAuthStatus = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('accessToken')
       
       if (!token) {
         dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false })
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
       // Verify token with backend
-      const response = await axios.get(`${API_URL}/auth/me`)
+      const response = await axios.get(`${API_URL}/auth/profile`)
       
       if (response.data.success) {
         dispatch({ type: AUTH_ACTIONS.SET_USER, payload: response.data.user })
@@ -94,7 +94,9 @@ export const AuthProvider = ({ children }) => {
         }
       } else {
         // Token is invalid, remove it
-        localStorage.removeItem('token')
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        localStorage.removeItem('user')
         delete axios.defaults.headers.common['Authorization']
         dispatch({ type: AUTH_ACTIONS.LOGOUT })
       }
@@ -102,7 +104,9 @@ export const AuthProvider = ({ children }) => {
       console.error('Auth check failed:', error)
       
       // Remove invalid token
-      localStorage.removeItem('token')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('user')
       delete axios.defaults.headers.common['Authorization']
       dispatch({ type: AUTH_ACTIONS.LOGOUT })
     }
@@ -116,11 +120,13 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post(`${API_URL}/auth/login`, credentials)
       
       if (response.data.success) {
-        const { user, token } = response.data
+        const { user, accessToken, refreshToken } = response.data
         
         // Store token
-        localStorage.setItem('token', token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+        localStorage.setItem('user', JSON.stringify(user))
+        axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
         
         // Update user state
         dispatch({ type: AUTH_ACTIONS.SET_USER, payload: user })
@@ -152,7 +158,9 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = () => {
     // Remove token
-    localStorage.removeItem('token')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('user')
     delete axios.defaults.headers.common['Authorization']
     
     // Update state

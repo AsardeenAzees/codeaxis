@@ -14,7 +14,7 @@ import {
   ThreeDots,
   CreditCard,
   Calendar,
-  DollarSign,
+  CurrencyDollar,
   Person,
   Building,
   FileText,
@@ -365,7 +365,7 @@ const Payments = () => {
                       </td>
                       <td>
                         <div className="d-flex align-items-center">
-                          <DollarSign size={16} className="text-muted me-2" />
+                          <CurrencyDollar size={16} className="text-muted me-2" />
                           <span className="fw-semibold">
                             {formatCurrency(payment.amount)}
                           </span>

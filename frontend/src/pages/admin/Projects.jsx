@@ -15,7 +15,7 @@ import {
   Folder,
   Calendar,
   Person,
-  DollarSign
+  CurrencyDollar
 } from 'react-bootstrap-icons';
 import { getProjects, deleteProject } from '../../api/projects';
 import { getSettings } from '../../api/settings';
@@ -375,7 +375,7 @@ const Projects = () => {
                       </td>
                       <td>
                         <div className="d-flex align-items-center">
-                          <DollarSign size={16} className="text-muted me-2" />
+                          <CurrencyDollar size={16} className="text-muted me-2" />
                           <span>{project.budget ? `LKR ${project.budget.toLocaleString()}` : 'N/A'}</span>
                         </div>
                       </td>

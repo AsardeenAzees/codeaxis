@@ -15,8 +15,8 @@ import ProjectDetail from './pages/public/ProjectDetail'
 import Contact from './pages/public/Contact'
 import HireUs from './pages/public/HireUs'
 
-// Admin Pages
-import Login from './pages/admin/Login'
+// Admin Pages (only existing ones)
+import Login from './pages/auth/Login'
 import Dashboard from './pages/admin/Dashboard'
 import Projects from './pages/admin/Projects'
 import ProjectForm from './pages/admin/ProjectForm'
@@ -25,13 +25,15 @@ import ClientForm from './pages/admin/ClientForm'
 import Payments from './pages/admin/Payments'
 import PaymentForm from './pages/admin/PaymentForm'
 import Leads from './pages/admin/Leads'
-import LeadDetail from './pages/admin/LeadDetail'
-import Testimonials from './pages/admin/Testimonials'
-import TestimonialForm from './pages/admin/TestimonialForm'
-import Users from './pages/admin/Users'
-import UserForm from './pages/admin/UserForm'
-import Settings from './pages/admin/Settings'
-import Profile from './pages/admin/Profile'
+// Optional pages below are removed because files are not present
+// import LeadDetail from './pages/admin/LeadDetail'
+// import Testimonials from './pages/admin/Testimonials'
+// import TestimonialForm from './pages/admin/TestimonialForm'
+// import Users from './pages/admin/Users'
+// import UserForm from './pages/admin/UserForm'
+// import Settings from './pages/admin/Settings'
+// import Profile from './pages/admin/Profile'
+import ForgotPassword from './pages/auth/ForgotPassword'
 
 // Context
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -76,7 +78,9 @@ const AppRoutes = () => {
   const { user } = useAuth()
   
   // Fetch settings for the app
-  const { data: settings } = useQuery('settings', getSettings, {
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
     staleTime: 10 * 60 * 1000, // 10 minutes
   })
   
@@ -112,7 +116,7 @@ const AppRoutes = () => {
         <meta name="robots" content="index, follow" />
         
         {/* Preconnect to API */}
-        <link rel="preconnect" href={process.env.VITE_API_URL || 'http://localhost:5000'} />
+        <link rel="preconnect" href={(import.meta?.env?.VITE_API_URL) || 'http://localhost:5000'} />
       </Helmet>
       
       <Routes>
@@ -142,38 +146,12 @@ const AppRoutes = () => {
           <Route path="payments/new" element={<PaymentForm />} />
           <Route path="payments/:id/edit" element={<PaymentForm />} />
           <Route path="leads" element={<Leads />} />
-          <Route path="leads/:id" element={<LeadDetail />} />
-          <Route path="testimonials" element={<Testimonials />} />
-          <Route path="testimonials/new" element={<TestimonialForm />} />
-          <Route path="testimonials/:id/edit" element={<TestimonialForm />} />
-          <Route path="profile" element={<Profile />} />
-          
-          {/* Main Admin Only Routes */}
-          <Route path="users" element={
-            <ProtectedRoute requireMainAdmin>
-              <Users />
-            </ProtectedRoute>
-          } />
-          <Route path="users/new" element={
-            <ProtectedRoute requireMainAdmin>
-              <UserForm />
-            </ProtectedRoute>
-          } />
-          <Route path="users/:id/edit" element={
-            <ProtectedRoute requireMainAdmin>
-              <UserForm />
-            </ProtectedRoute>
-          } />
-          <Route path="settings" element={
-            <ProtectedRoute requireMainAdmin>
-              <Settings />
-            </ProtectedRoute>
-          } />
+          {/* Removed routes to non-existent pages for stability */}
         </Route>
         
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/reset-password" element={<Login />} />
+        <Route path="/reset-password" element={<ForgotPassword />} />
         
         {/* 404 Route */}
         <Route path="*" element={

@@ -15,7 +15,7 @@ import {
   List,
   Bell,
   Search,
-  LogOut
+  BoxArrowRight
 } from 'react-bootstrap-icons';
 import { Helmet } from 'react-helmet-async';
 
@@ -158,7 +158,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard' }) => {
               onClick={handleLogout}
               className="logout-btn"
             >
-              <LogOut className="me-1" />
+              <BoxArrowRight className="me-1" />
               Logout
             </Button>
           </div>
@@ -240,7 +240,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard' }) => {
                     </Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={handleLogout}>
-                      <LogOut className="me-2" />
+                      <BoxArrowRight className="me-2" />
                       Logout
                     </Dropdown.Item>
                   </Dropdown.Menu>

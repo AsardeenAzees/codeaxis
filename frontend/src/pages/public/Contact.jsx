@@ -31,7 +31,7 @@ const Contact = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: getSettings,
-    staleTime: 15 * 60 * 1000, // 15 minutes
+    staleTime: 15 * 60 * 1000,
   });
 
   const handleChange = (e) => {

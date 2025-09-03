@@ -8,8 +8,8 @@ import {
   People, 
   CreditCard, 
   Envelope, 
-  TrendingUp, 
-  TrendingDown,
+  GraphUp, 
+  GraphDown,
   Eye,
   Plus
 } from 'react-bootstrap-icons';
@@ -86,7 +86,7 @@ const Dashboard = () => {
               <h3 className="mb-1">{value}</h3>
               {change && (
                 <div className={`d-flex align-items-center ${changeType === 'up' ? 'text-success' : 'text-danger'}`}>
-                  {changeType === 'up' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                  {changeType === 'up' ? <GraphUp size={16} /> : <GraphDown size={16} />}
                   <small className="ms-1">{change}</small>
                 </div>
               )}

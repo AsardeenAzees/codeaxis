@@ -20,21 +20,25 @@ import {
   BiShield, 
   BiTrendingUp,
   BiCheckCircle,
-  BiArrowRight,
   BiStar,
   BiUserPlus,
   BiEnvelope
 } from 'react-icons/bi'
+import { ArrowRight } from 'react-bootstrap-icons'
 
 const Home = () => {
   // Fetch public projects for showcase
-  const { data: projects, isLoading: projectsLoading } = useQuery(['publicProjects'], publicAPI.getPublicProjects, {
-    staleTime: 5 * 60 * 1000, // 5 minutes
+  const { data: projects, isLoading: projectsLoading } = useQuery({
+    queryKey: ['publicProjects'],
+    queryFn: publicAPI.getPublicProjects,
+    staleTime: 5 * 60 * 1000,
   })
 
   // Fetch settings
-  const { data: settings, isLoading: settingsLoading } = useQuery(['settings'], getSettings, {
-    staleTime: 10 * 60 * 1000, // 10 minutes
+  const { data: settings, isLoading: settingsLoading } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    staleTime: 10 * 60 * 1000,
   })
 
   if (settingsLoading || projectsLoading) {
@@ -342,7 +346,7 @@ const Home = () => {
                 className="fw-bold"
               >
                 View All Projects
-                <BiArrowRight className="ms-2" />
+                <ArrowRight className="ms-2" />
               </Button>
             </motion.div>
           </Container>

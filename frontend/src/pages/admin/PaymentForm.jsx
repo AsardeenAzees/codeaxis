@@ -11,7 +11,7 @@ import {
   X,
   CreditCard,
   Calendar,
-  DollarSign,
+  CurrencyDollar,
   Person,
   Building,
   FileText,
