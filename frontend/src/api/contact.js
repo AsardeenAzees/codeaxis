@@ -1,14 +1,25 @@
 import { api } from './api';
 
-// Submit general contact form
+// Submit general contact form → backend expects /public/contact
 export const submitContactForm = async (formData) => {
-  const response = await api.post('/contact', formData);
+  const response = await api.post('/public/contact', formData);
   return response.data;
 };
 
-// Submit project request form
+// Submit project request form → map to Leads API
 export const submitProjectRequest = async (formData) => {
-  const response = await api.post('/contact/project-request', formData);
+  // Map HireUs fields to Lead schema
+  const payload = {
+    name: formData.name,
+    email: formData.email,
+    phone: formData.phone,
+    organization: formData.organization,
+    projectBrief: formData.projectBrief || `Project: ${formData.projectTitle || ''}`.trim(),
+    budgetRange: formData.budgetRange || 'under_50k',
+    projectType: formData.projectTitle || 'custom',
+    timeline: formData.timeline || '1_3_months'
+  };
+  const response = await api.post('/leads', payload);
   return response.data;
 };
 
