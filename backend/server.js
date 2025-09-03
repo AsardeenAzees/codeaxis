@@ -47,11 +47,18 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// CORS configuration
+// CORS configuration (supports comma-separated ORIGIN env)
+const allowedOrigins = (process.env.ORIGIN || 'http://localhost:5173,http://localhost:3000')
+  .split(',')
+  .map(o => o.trim());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com', 'https://www.yourdomain.com']
-    : ['http://localhost:3000', 'http://localhost:5173'],
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']

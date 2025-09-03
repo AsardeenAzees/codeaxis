@@ -58,7 +58,7 @@ const paymentSchema = new mongoose.Schema({
   // Invoice and receipt
   invoiceNumber: {
     type: String,
-    required: true
+    // generated in pre-save; not required at validation time
   },
   receiptNumber: String,
   // Attachments

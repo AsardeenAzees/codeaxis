@@ -154,7 +154,7 @@ const projectSchema = new mongoose.Schema({
   // SEO and public display
   slug: {
     type: String,
-    unique: true,
+    // unique via index below to avoid duplicate declarations
     lowercase: true,
     trim: true
   },
@@ -231,7 +231,7 @@ projectSchema.index({ techStack: 1 });
 projectSchema.index({ tags: 1 });
 projectSchema.index({ plannedStartDate: 1 });
 projectSchema.index({ plannedEndDate: 1 });
-projectSchema.index({ slug: 1 });
+projectSchema.index({ slug: 1 }, { unique: true });
 projectSchema.index({ isActive: 1 });
 
 // Pre-save middleware to generate slug

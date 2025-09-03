@@ -39,7 +39,7 @@ const run = async () => {
       projectConfiguration: {
         statuses: [
           { value: 'planning', label: 'Planning', type: 'pending' },
-          { value: 'in-progress', label: 'In Progress', type: 'active' },
+          { value: 'in_progress', label: 'In Progress', type: 'active' },
           { value: 'review', label: 'In Review', type: 'active' },
           { value: 'completed', label: 'Completed', type: 'completed' }
         ],
@@ -57,27 +57,99 @@ const run = async () => {
     }, { upsert: true, new: true });
     console.log('✅ Settings seeded');
 
-    // Seed a sample client
-    const client = await Client.create({
-      name: 'Acme Corp',
-      email: 'contact@acme.com',
-      organization: 'Acme Corporation'
-    });
+    // Seed or reuse a sample client
+    const client = await Client.findOneAndUpdate(
+      { email: 'contact@acme.com' },
+      {
+        name: 'Acme Corp',
+        organization: 'Acme Corporation',
+        contactPerson: 'John Doe',
+        email: 'contact@acme.com',
+        phone: '+94 11 111 2222',
+        address: { city: 'Colombo', country: 'Sri Lanka' }
+      },
+      { upsert: true, new: true }
+    );
 
     // Seed a sample project
-    await Project.create({
-      title: 'Acme Website',
-      description: 'Corporate website redesign project',
-      slug: 'acme-website',
-      status: 'completed',
-      client: client._id,
-      visibility: { public: true },
-      techStack: ['react', 'node', 'mongodb'],
-      category: 'web',
-      completedDate: new Date(),
-      progress: 100
-    });
-    console.log('✅ Sample data seeded');
+    const project = await Project.findOneAndUpdate(
+      { slug: 'acme-website' },
+      {
+        title: 'Acme Website',
+        description: 'Corporate website redesign project',
+        status: 'completed',
+        client: client._id,
+        visibility: 'public',
+        budget: { amount: 500000, currency: 'LKR', type: 'fixed' },
+        plannedStartDate: new Date(Date.now() - 30*24*60*60*1000),
+        plannedEndDate: new Date(),
+        techStack: ['react', 'node', 'mongodb'],
+        category: 'web',
+        completedDate: new Date(),
+        progress: 100
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    console.log('✅ Project ready');
+
+    // Create a demo payment
+    const Payment = require('../models/Payment');
+    const existingPayment = await Payment.findOne({ project: project._id, amount: 250000, status: 'paid' });
+    if (!existingPayment) {
+      await Payment.create({
+        project: project._id,
+        client: client._id,
+        amount: 250000,
+        currency: 'LKR',
+        type: 'final',
+        method: 'bank',
+        status: 'paid',
+        dueDate: new Date(),
+        paidDate: new Date(),
+        reference: 'BANK-REF-001',
+        createdBy: (await User.findOne({ email: adminEmail }))._id,
+        taxAmount: 0,
+        discountAmount: 0,
+        totalAmount: 250000
+      });
+    }
+
+    // Create a demo testimonial
+    const Testimonial = require('../models/Testimonial');
+    const existingTestimonial = await Testimonial.findOne({ slug: 'acme-website-outstanding-work' });
+    if (!existingTestimonial) {
+      await Testimonial.create({
+        project: project._id,
+        client: client._id,
+        clientName: 'John Doe',
+        clientPosition: 'CTO',
+        clientOrganization: 'Acme Corporation',
+        rating: 5,
+        title: 'Outstanding Work',
+        content: 'The CodeAxis team delivered beyond expectations.',
+        isApproved: true,
+        isPublic: true,
+        createdBy: (await User.findOne({ email: adminEmail }))._id,
+        slug: 'acme-website-outstanding-work'
+      });
+    }
+
+    // Create a demo lead
+    const Lead = require('../models/Lead');
+    const existingLead = await Lead.findOne({ email: 'jane@example.com', projectBrief: 'New ecommerce storefront' });
+    if (!existingLead) {
+      await Lead.create({
+        name: 'Jane Smith',
+        email: 'jane@example.com',
+        phone: '+94 77 555 6666',
+        organization: 'Smith Co',
+        projectBrief: 'New ecommerce storefront',
+        budgetRange: '100k_250k',
+        projectType: 'ecommerce',
+        timeline: '3_6_months',
+        source: 'website'
+      });
+    }
 
   } catch (err) {
     console.error('Seed error:', err);

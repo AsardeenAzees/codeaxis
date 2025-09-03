@@ -35,9 +35,12 @@ const userSchema = new mongoose.Schema({
   nic: {
     type: String,
     required: [true, 'NIC is required'],
-    unique: true,
     trim: true,
     uppercase: true
+  },
+  // Store NIC hash for secure comparisons (not unique)
+  nicHash: {
+    type: String
   },
   profileImage: {
     public_id: String,
@@ -78,14 +81,19 @@ userSchema.virtual('isLocked').get(function () {
   return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
-// Indexes are defined via field-level unique where needed; avoid duplicates
+// Avoid duplicate indexes; email has field-level unique
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
   try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
+    if (this.isModified('password')) {
+      const salt = await bcrypt.genSalt(12);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+    if (this.isModified('nic')) {
+      const salt = await bcrypt.genSalt(12);
+      this.nicHash = await bcrypt.hash(this.nic, salt);
+    }
     next();
   } catch (error) {
     next(error);
