@@ -1,0 +1,20 @@
+{
+  "name": "codeaxis-freelance-management",
+  "version": "1.0.0",
+  "description": "Freelance Project & Payment Management + Public Portfolio Showcase",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["mern", "freelance", "project-management", "portfolio"],
+  "author": "CodeAxis Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
